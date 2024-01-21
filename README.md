@@ -6,3 +6,5 @@ In this case, I want to learn Chinese and my tandem partner will be Lang, an LLM
 
 I started this tandem partner chat bot after having participated in the HMS Analytical Software PubQuiz Hackathon that took place on 17. January 2024. [Here](https://github.com/HMS-Analytical-Software/Hackathon-Pubquiz) is the Hackathon respository.
 It was a great starting point for getting into the topic. With this project I want to deepen my understanding and hopefully create something useful for myself.
+
+I am using the carefully compiled character list from [agj/3000-traditional-hanzi](https://github.com/agj/3000-traditional-hanzi). Thanks a lot for sharing!
