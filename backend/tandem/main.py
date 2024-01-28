@@ -3,9 +3,27 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 from langchain_openai import ChatOpenAI
+from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from tandem.char_retrieval import get_character_list
+
+
+def get_contextualizer_chain():
+    llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
+    contextualizer_system_prompt = """Given a chat history and the latest user input which might reference context in the chat history, formulate a standalone input which 
+can be understood without the chat history. Do NOT answer the input, just reformulate it if needed and otherwise return it as is."""
+    contextualizer_prompt = ChatPromptTemplate.from_messages(
+        [
+            ("system", contextualizer_system_prompt),
+            MessagesPlaceholder(variable_name="chat_history"),
+            ("human", "{input}"),
+        ]
+    )
+
+    contextualizer_chain = contextualizer_prompt | llm | StrOutputParser()
+    return contextualizer_chain
+
 
 def get_simplified_traditional_converter_chain():
     llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
@@ -42,6 +60,22 @@ def get_tandem_partner(character_list):
     return tandem_partner
 
 
+def run_conversation_loop(conversation_chain):
+    chat_history = []
+    contextualizer = get_contextualizer_chain()
+    while True:
+        message = input("[Student]: ")
+        terminate = "Bye!" in message
+        if len(chat_history) > 0:
+            message = contextualizer.invoke({"input": message, "chat_history": chat_history})
+            print(f"[Student (contextualized)]: {message}")
+        response = conversation_chain.invoke({'input': message})
+        chat_history.extend([HumanMessage(content=message), AIMessage(content=response)])
+        print(f"[Lang]:\n{response}")
+        if terminate:
+            print("\nTandem session ended.")
+            break
+
 
 if __name__ == '__main__':
     load_dotenv()
@@ -50,10 +84,4 @@ if __name__ == '__main__':
     print("character list:",character_list)
     tandem_partner = get_tandem_partner(character_list)
 
-    while True:
-        message = input("[Student]: ")
-        response = tandem_partner.invoke({'input': message})
-        print(f"[Lang]: {response}")
-        if message.lower() in {"exit", "bye"}:
-            print("\nTandem session ended.")
-            break
+    run_conversation_loop(tandem_partner)
