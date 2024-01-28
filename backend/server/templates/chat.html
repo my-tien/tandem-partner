@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Chinese Tandem Partner</title>
+    <link rel="stylesheet" href="./style.css">
+    <link rel="icon" href="./favicon.ico" type="image/x-icon">
+  </head>
+  <body>
+    <main>
+      <h1>Talk with Lang, the Chinese Tandem Partner!</h1>
+    </main>
+    <p class="topic">{{ topic }}</p>
+    <div id="chatHistory"/>
+    <form hx-post="/chat" hx-target="#chatHistory" hx-swap="beforeend">
+      <input data-id="messageInput" name="message" placeholder="Write a message…">
+      <input data-id="messageSend" type="submit" value="Send">
+    </form>
+    <script src="{{url_for('static', filename='htmx.min.js')}}"></script>
+    <script>
+
+    </script>
+  </body>
+  </html>
+  

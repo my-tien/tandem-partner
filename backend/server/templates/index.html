@@ -10,20 +10,19 @@
     <main>
       <h1>Talk with Lang, the Chinese Tandem Partner!</h1>
     </main>
-    <div hx-target="this" hx-swap="outerHTML">
-      <form hx-post="/topic">
-        Topic: <input name="topic" placeholder="Enter a topic to talk about…">
-        <input type="submit" value="Submit">
-      </form>
-    </div>
-    <div class="chat-history">
-      
-    </div>
-    <div class="input">
-      <input placeholder="Enter a message…">
-      <button id="submit" hx-post="/message">Send</button>
-    </div>
+
+    <form action="/chat" method="GET">
+      <input data-id="topicInput" name="topic" placeholder="Enter a topic to talk about…">
+      <input data-id="topicSubmit" type="submit" value="Submit">
+    </form>
     <script src="{{url_for('static', filename='htmx.min.js')}}"></script>
+    <script>
+      const button = document.querySelector("[data-id=topicSubmit]");
+      button.disabled = true;
+      document.querySelector("[data-id=topicInput]").addEventListener("input", (e) => {
+        button.disabled = !e.target.value || e.target.value.length == 0;
+      })
+    </script>
   </body>
   </html>
   
