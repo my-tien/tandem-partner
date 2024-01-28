@@ -45,7 +45,7 @@ def get_tandem_partner(character_list):
 
 if __name__ == '__main__':
     load_dotenv()
-    topic = "household chores"
+    topic = input('Conversation topic (default: "household chores"): ') or "household chores"
     character_list = get_character_list(db_path=f"{Path(__file__).parent.parent}/.chroma/3000-traditional-hanzi", topic=topic)
     print("character list:",character_list)
     tandem_partner = get_tandem_partner(character_list)
