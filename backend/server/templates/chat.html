@@ -11,7 +11,7 @@
       <h1>Talk with Lang, the Chinese Tandem Partner!</h1>
     </main>
     <p class="topic">{{ topic }}</p>
-    <div id="chatHistory"/>
+    <div id="chatHistory"></div>
     <form hx-post="/chat" hx-target="#chatHistory" hx-swap="beforeend">
       <input data-id="messageInput" name="message" placeholder="Write a message…">
       <input data-id="messageSend" type="submit" value="Send">
