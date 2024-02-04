@@ -12,8 +12,8 @@
     </main>
     <p class="topic">{{ topic }}</p>
     <div id="chatHistory"></div>
-    <form hx-post="/chat" hx-target="#chatHistory" hx-swap="beforeend">
-      <input data-id="messageInput" name="message" placeholder="Write a message…">
+    <form hx-post="/chat/message?topic={{ topic }}" hx-target="#chatHistory" hx-swap="beforeend">
+      <input id="messageInput" name="message" placeholder="Write a message…">
       <input data-id="messageSend" type="submit" value="Send">
     </form>
     <script src="{{url_for('static', filename='htmx.min.js')}}"></script>
