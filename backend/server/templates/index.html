@@ -3,16 +3,15 @@
   <head>
     <meta charset="UTF-8">
     <title>Chinese Tandem Partner</title>
-    <link rel="stylesheet" href="./style.css">
-    <link rel="icon" href="./favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
   </head>
   <body>
-    <main>
+    <main class="header">
       <h1>Talk with Lang, the Chinese Tandem Partner!</h1>
     </main>
 
-    <form action="/chat" method="GET">
-      <input data-id="topicInput" name="topic" placeholder="Enter a topic to talk about…">
+    <form class="input-form" action="/chat" method="GET">
+      <input data-id="topicInput" type="text" name="topic" placeholder="Enter a topic to talk about…">
       <input data-id="topicSubmit" type="submit" value="Submit">
     </form>
     <script src="{{url_for('static', filename='htmx.min.js')}}"></script>

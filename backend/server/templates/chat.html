@@ -3,23 +3,21 @@
   <head>
     <meta charset="UTF-8">
     <title>Chinese Tandem Partner</title>
-    <link rel="stylesheet" href="./style.css">
-    <link rel="icon" href="./favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
   </head>
   <body>
-    <main>
-      <h1>Talk with Lang, the Chinese Tandem Partner!</h1>
-    </main>
-    <p class="topic">{{ topic }}</p>
-    <div id="chatHistory"></div>
-    <form hx-post="/chat/message?topic={{ topic }}" hx-target="#chatHistory" hx-swap="beforeend">
-      <input id="messageInput" name="message" placeholder="Write a message…">
-      <input data-id="messageSend" type="submit" value="Send">
-    </form>
+    <div class="content">
+      <main class="header">
+        <h1>Talk with Lang, the Chinese Tandem Partner!</h1>
+      </main>
+      <p class="topic">Conversation topic: <strong>{{ topic }}</strong></p>
+      <div id="chatHistory"></div>
+      <form class="input-form" hx-post="/chat/message?topic={{ topic }}" hx-target="#chatHistory" hx-swap="beforeend">
+        <input id="messageInput" type="text" name="message" placeholder="Write a message…">
+        <input data-id="messageSend" type="submit" value="Send">
+      </form>
+    </div>
     <script src="{{url_for('static', filename='htmx.min.js')}}"></script>
-    <script>
-
-    </script>
   </body>
   </html>
   
