@@ -5,24 +5,26 @@ from langchain.document_loaders import TextLoader
 from langchain.prompts import ChatPromptTemplate
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
-# from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores.chroma import Chroma
 
 
+_DEFAULT_DOC_PATH = f"{Path(__file__).parent.parent}/.chroma/3000-traditional-hanzi"
+
 def generate_character_db(character_txt_path: str, persist_directory: Optional[str] = None):
     persist_directory = persist_directory or f".chroma/{Path(character_txt_path).stem}"
-    # split documents if necessary
-    # splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=20, separators=["\n"])
-    # char_embedding = splitter.split_documents(char_embedding)
 
     loader = TextLoader(character_txt_path, encoding="utf-8")
     char_documents = loader.load()
 
-    db = Chroma.from_documents(char_documents, embedding=OpenAIEmbeddings(), persist_directory=persist_directory)
+    splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=20, separators=["\n"])
+    splitted_docs = splitter.split_documents(char_documents)
+
+    db = Chroma.from_documents(splitted_docs, embedding=OpenAIEmbeddings(), persist_directory=persist_directory)
     return db
 
 
-def get_character_list(db_path: str, topic):
+def get_character_list(topic, db_path: str = _DEFAULT_DOC_PATH):
     db = Chroma(persist_directory=db_path, embedding_function=OpenAIEmbeddings())
 
     prompt = ChatPromptTemplate.from_template(
@@ -34,6 +36,10 @@ Please select up to 10 characters from the provided context that could be used i
 </context>
 
 Topic: {input}
+
+Output format:
+漢子(pīnyīn) - English
+…
 """
     )
 

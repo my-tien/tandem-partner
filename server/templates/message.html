@@ -3,6 +3,11 @@
     <p class="chat-item-message">{{ message }}</p>
     <p class="chat-item-time">{{ time }}</p>
 </div>
+<div class="chat-item chat-message">
+    <p class="chat-item-name">[{{ name }} (contextualized)]:</p>
+    <p class="chat-item-message">{{ contextualized_message }}</p>
+    <p class="chat-item-time">{{ time }}</p>
+</div>
 <div
     id="response"
     hx-get="/chat/response?topic={{ topic }}"

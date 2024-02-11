@@ -10,7 +10,10 @@
       <main class="header">
         <h1>Talk with Lang, the Chinese Tandem Partner!</h1>
       </main>
-      <p class="topic">Conversation topic: <strong>{{ topic }}</strong></p>
+      <p class="topic">
+        <p>Conversation topic: <strong>{{ topic }}</strong></p>
+        <p>Character list:</p>
+        <p>{{ character_list|safe }}</p>
       <div id="chatHistory"></div>
       <form class="input-form" hx-post="/chat/message?topic={{ topic }}" hx-target="#chatHistory" hx-swap="beforeend">
         <input id="messageInput" type="text" name="message" placeholder="Write a message…">
