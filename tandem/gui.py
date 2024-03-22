@@ -1,4 +1,5 @@
 from datetime import datetime
+import os
 import signal
 import sys
 from typing import Optional
@@ -93,6 +94,7 @@ def open_topic_dialog():
 
 
 if __name__ == '__main__':
+    os.environ["QT_IM_MODULE"] = "fcitx"
     app = QtWidgets.QApplication(sys.argv)
     app.setApplicationName('Tandem Partner')
 
