@@ -3,5 +3,4 @@ langchain==0.0.353
 openai==1.6.1
 chromadb==0.4.21
 langchain-openai==0.0.3
-# server
-flask-htmx==0.3.2
+PySide6==6.6.2
