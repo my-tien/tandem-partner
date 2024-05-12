@@ -41,6 +41,8 @@ class ChatWindow(QtWidgets.QMainWindow):
 
         self.chat_history_widget = QtWidgets.QTextEdit(self)
         self.chat_history_widget.setReadOnly(True)
+        self.chat_history_widget.setFontFamily("TW-MOE-Std-Kai")
+        self.chat_history_widget.setFontPointSize(18)
 
         self.message_input = QtWidgets.QLineEdit()
         self.message_input.setPlaceholderText("Type a message…")
