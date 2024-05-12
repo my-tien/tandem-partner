@@ -59,8 +59,13 @@ class ChatWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(central_widget)
 
         self.message_input.textChanged.connect(self._message_input_changed)
+        self.message_input.returnPressed.connect(self._send_button_clicked)
         self.send_button.clicked.connect(self._send_button_clicked)
         self.tandem_partner.response_signal.connect(self._display_response)
+
+    def showEvent(self, event):
+        super(ChatWindow, self).showEvent(event)
+        self.message_input.setFocus()
 
     def _message_input_changed(self, text):
         self.send_button.setEnabled = len(text) > 0
@@ -73,6 +78,7 @@ class ChatWindow(QtWidgets.QMainWindow):
 
 """
         self.chat_history_widget.setPlainText(history)
+        self.chat_history_widget.verticalScrollBar().setValue(self.chat_history_widget.verticalScrollBar().maximum())
 
     def _send_button_clicked(self):
         message = self.message_input.text()
