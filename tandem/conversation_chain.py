@@ -22,7 +22,15 @@ can be understood without the chat history. Do NOT answer the input, just reform
 
 def get_simplified_traditional_converter_chain():
     llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
-    converter_system_prompt = """Given the provided input, replace all simplified Chinese characters with traditional Chinese characters and add a Pinyin transcription as well as an English translation. Add newlines between the Chinese, the Pinyin transcription and the English translation. Do NOT answer the input, just return the input with the described changes."""
+    converter_system_prompt = """Given the provided input, replace all simplified Chinese characters with traditional Chinese characters and add a Pinyin transcription as well as an English translation. Use the below output format. Do NOT answer the input, just return the input with the described changes.    
+    Output format:
+
+    <message in traditional chinese characters>
+    ---
+    <message in Pinyin transcription>
+    ---
+    <english translation of the message>
+    """
     converter_prompt = ChatPromptTemplate.from_messages(
         [
             ("system", converter_system_prompt),

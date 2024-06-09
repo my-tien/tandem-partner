@@ -15,9 +15,21 @@ class ResponseWorker(QThread):
         response = self.chain.invoke({"input": self.message})
         self.response_received.emit(response)
         
+class Response:
+    def __init__(self, msg):
+        self.traditional = ""
+        self.pinyin = ""
+        self.english = ""
+        parts = msg.split('---')
+        if len(parts) > 0:
+            self.traditional = parts[0].strip()
+        if len(parts) > 1:
+            self.pinyin = parts[1].strip()
+        if len(parts) > 2:
+            self.english = parts[2].strip()
 
 class TandemPartner(QObject):
-    response_signal = Signal(str)
+    response_signal = Signal(Response)
 
     def __init__(self, character_list):
         super(TandemPartner, self).__init__()
