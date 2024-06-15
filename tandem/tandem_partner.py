@@ -31,7 +31,7 @@ class Response:
 class TandemPartner(QObject):
     response_signal = Signal(Response)
 
-    def __init__(self, character_list):
+    def __init__(self, character_list: str):
         super(TandemPartner, self).__init__()
         tandem_chain = get_tandem_chain(character_list)
         converter_chain = get_simplified_traditional_converter_chain()

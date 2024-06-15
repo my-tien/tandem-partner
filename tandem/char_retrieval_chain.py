@@ -24,7 +24,7 @@ def generate_character_db(character_txt_path: str, persist_directory: Optional[s
     return db
 
 
-def get_character_list(topic, db_path: str = _DEFAULT_DOC_PATH):
+def get_character_list(topic, db_path: str = _DEFAULT_DOC_PATH) -> str:
     db = Chroma(persist_directory=db_path, embedding_function=OpenAIEmbeddings())
 
     prompt = ChatPromptTemplate.from_template(
