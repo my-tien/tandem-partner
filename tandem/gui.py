@@ -6,15 +6,11 @@ import signal
 import sys
 from typing import Optional
 
-from PySide6 import QtCore, QtWidgets
-from PySide6 import QtGui
+from PySide6 import QtCore, QtGui, QtMultimedia, QtWidgets
 
+from tandem.chat_history_widget import ChatHistoryWidget
 from tandem.char_retrieval_chain import get_character_list
 from tandem_partner import Response, TandemPartner
-
-
-def _get_time():
-    return datetime.now().strftime("%H:%M:%S")
 
 
 class Separator(QtWidgets.QFrame):
@@ -40,8 +36,12 @@ class ChatWindow(QtWidgets.QMainWindow):
 
         self.topic_label = QtWidgets.QLabel(self.tandem_partner.character_list)
 
-        self.chat_history_widget = QtWidgets.QTextEdit(self)
-        self.chat_history_widget.setReadOnly(True)
+        self.chat_history_widget = ChatHistoryWidget(self)
+
+        self.media_player = QtMultimedia.QMediaPlayer()
+        self.audio_output = QtMultimedia.QAudioOutput()
+        self.audio_output.setVolume(50)
+        self.media_player.setAudioOutput(self.audio_output)
 
         self.message_input = QtWidgets.QLineEdit()
         self.message_input.setFont(QtGui.QFont("TW-MOE-Std-Kai", pointSize=18))
@@ -65,6 +65,8 @@ class ChatWindow(QtWidgets.QMainWindow):
         self.message_input.returnPressed.connect(self._send_button_clicked)
         self.send_button.clicked.connect(self._send_button_clicked)
         self.tandem_partner.response_signal.connect(self._display_response)
+        self.chat_history_widget.play_clicked.connect(self._play_text2speech)
+
 
     def showEvent(self, event):
         super(ChatWindow, self).showEvent(event)
@@ -73,42 +75,21 @@ class ChatWindow(QtWidgets.QMainWindow):
     def _message_input_changed(self, text):
         self.send_button.setEnabled = len(text) > 0
 
-    @contextmanager
-    def chinese_font_context(self):
-        current_font = self.chat_history_widget.currentFont()
-        self.chat_history_widget.setCurrentFont("TW-MOE-Std-Kai")
-        self.chat_history_widget.setFontPointSize(18)
-        try:
-            yield
-        finally:
-            self.chat_history_widget.setCurrentFont(current_font)
-
-    def _display_user_message(self, name: str, message: str):
-        self.chat_history_widget.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
-        self.chat_history_widget.insertPlainText(f"\n[{name}] {_get_time()}:\n")
-        with self.chinese_font_context():
-            self.chat_history_widget.insertPlainText(message)
-        self.chat_history_widget.insertPlainText("\n")
-        self.chat_history_widget.verticalScrollBar().setValue(self.chat_history_widget.verticalScrollBar().maximum())
-
-    def _display_lang_response(self, name: str, message: Response):
-        self.chat_history_widget.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
-        self.chat_history_widget.insertPlainText(f"\n[{name}] {_get_time()}:\n")
-        with self.chinese_font_context():
-            self.chat_history_widget.insertPlainText(f"{message.traditional}")
-        self.chat_history_widget.insertPlainText(f"\n\n{message.pinyin}\n\n{message.english}\n")
-        self.chat_history_widget.verticalScrollBar().setValue(self.chat_history_widget.verticalScrollBar().maximum())
-
     def _send_button_clicked(self):
         message = self.message_input.text()
         self.message_input.setText("")
-        self._display_user_message("Student", message)
+        self.chat_history_widget._display_user_message("Student", message)
         self.tandem_partner.invoke(message)
 
     @QtCore.Slot(Response)
     def _display_response(self, response: Response):
-        self._display_lang_response("Lang", response)
+        self.chat_history_widget._display_lang_response("Lang", response)
 
+    @QtCore.Slot(int)
+    def _play_text2speech(self, message_idx: int):
+        self.tandem_partner.text2speech(message_idx, f"_audio/{message_idx}.mp3")
+        self.media_player.setSource(QtCore.QUrl.fromLocalFile(f"_audio/{message_idx}.mp3"))
+        self.media_player.play()
 
 def open_topic_dialog():
     topic, ok = QtWidgets.QInputDialog.getText(
