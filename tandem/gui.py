@@ -36,7 +36,7 @@ class ChatWindow(QtWidgets.QMainWindow):
         screen = QtGui.QScreen().geometry()
         self.move((screen.width() - width) // 2, (screen.height() - height) // 2)
 
-        self.tandem_partner = tandem
+        self.tandem_partner: TandemPartner = tandem
 
         self.topic_label = QtWidgets.QLabel(self.tandem_partner.character_list)
 
