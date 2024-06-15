@@ -62,6 +62,17 @@ class TandemPartner(QObject):
         self.worker = ResponseWorker(self.chain, self.chat_history)
         self.worker.response_received.connect(self.handle_response)
         self.worker.start()
+    
+    @Slot(str)
+    def dummy_invoke(self, message: str):
+        self._add_user_message(message)
+        response = """你好！要不要聊聊關於停車的話題？
+---
+Nǐ hǎo! Yào bù yào liáo liáo guān yú tíngchē de huàtí?
+---
+Hello! Do you want to talk about the topic of parking?"""
+        idx = self._add_ai_message(response)
+        self.response_signal.emit(Response(response, idx))
 
     @Slot(str)
     def handle_response(self, response: str):

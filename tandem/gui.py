@@ -1,5 +1,4 @@
-from contextlib import contextmanager
-from datetime import datetime
+import argparse
 import os
 import platform
 import signal
@@ -30,7 +29,7 @@ class ChatWindow(QtWidgets.QMainWindow):
         height = 720
         self.setGeometry(0, 0, width, height)
         screen = QtGui.QScreen().geometry()
-        self.move((screen.width() - width) // 2, (screen.height() - height) // 2)
+        # self.move((screen.width() - width) // 2, (screen.height() - height) // 2)
 
         self.tandem_partner: TandemPartner = tandem
 
@@ -79,7 +78,10 @@ class ChatWindow(QtWidgets.QMainWindow):
         message = self.message_input.text()
         self.message_input.setText("")
         self.chat_history_widget._display_user_message("Student", message)
-        self.tandem_partner.invoke(message)
+        if DUMMY_RUN:
+            self.tandem_partner.dummy_invoke(message)
+        else:
+            self.tandem_partner.invoke(message)
 
     @QtCore.Slot(Response)
     def _display_response(self, response: Response):
@@ -103,14 +105,37 @@ def open_topic_dialog():
 if __name__ == '__main__':
     if platform.system() == "linux":
         os.environ["QT_IM_MODULE"] = "fcitx"
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dummy", action="store_true")
+    parser.add_argument("--choose-topic", action="store_true")
+    args = parser.parse_args()
+    DUMMY_RUN = args.dummy
+        
     app = QtWidgets.QApplication(sys.argv)
     app.setApplicationName('Tandem Partner')
 
-    topic = open_topic_dialog()
-    if not topic:
-        QtCore.QCoreApplication.exit()
+    if DUMMY_RUN:
+        character_list = """停(tíng) - stop, suspend, delay; suitable
+救(jiù) - save, rescue, relieve; help, aid
+外(wài) - out, outside, external; foreign
+進(jìn) - advance, make progress, enter
+客(kè) - guest, traveller; customer
+集(jí) - assemble, collect together
+越(yuè) - exceed, go beyond; the more ...
+落(luò) - fall, drop; net income, surplus
+待(dài) - treat, entertain, receive; wait
+旅(lǚ) - travel, journey, trip"""
+    else:
+        if args.choose_topic:
+            topic = open_topic_dialog()
+            if not topic:
+                QtCore.QCoreApplication.exit()
 
-    character_list = get_character_list(topic="traveling")
+            character_list = get_character_list(topic=topic)
+        else:
+            character_list = get_character_list(topic="traveling")
+    
     tandem = TandemPartner(character_list)
 
     window = ChatWindow(tandem)
