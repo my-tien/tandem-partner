@@ -51,7 +51,7 @@ class ChatHistoryWidget(QtWidgets.QTextEdit):
 
         cursor = self.textCursor()
         plainFormat = cursor.charFormat()
-        anchorFormat = plainFormat
+        anchorFormat = QtGui.QTextCharFormat()
         anchorFormat.setAnchor(True)
         anchorFormat.setAnchorHref(f"{message.idx}")
         anchorFormat.setToolTip("Play Lang response")
