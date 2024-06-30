@@ -1,3 +1,7 @@
+from dotenv import load_dotenv
+if not load_dotenv(override=True):
+    raise ValueError("Failed to load OPENAI_API_KEY")
+
 from pathlib import Path
 
 from langchain.memory import ChatMessageHistory
