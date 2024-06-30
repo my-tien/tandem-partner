@@ -6,7 +6,7 @@ from typing import Optional
 from PySide6 import QtCore, QtWidgets
 from PySide6 import QtGui
 from PySide6.QtCore import Signal
-from tandem_partner import Response
+from tandem.tandem_partner import Response
 
 
 def _get_time_label_short(d: datetime):

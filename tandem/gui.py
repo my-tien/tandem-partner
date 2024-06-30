@@ -9,7 +9,7 @@ from PySide6 import QtCore, QtGui, QtMultimedia, QtWidgets
 
 from tandem.chat_history_widget import ChatHistoryWidget
 from tandem.char_retrieval_chain import get_character_list
-from tandem_partner import Response, TandemPartner
+from tandem.tandem_partner import Response, TandemPartner
 
 
 class Separator(QtWidgets.QFrame):
