@@ -7,9 +7,10 @@ from typing import Optional
 
 from PySide6 import QtCore, QtGui, QtMultimedia, QtWidgets
 
-from tandem.chat_history_widget import ChatHistoryWidget
+from tandem.chat_history.chat_history_widget import ChatHistoryWidget
+from tandem.chat_history.history_model import HistoryModel
 from tandem.char_retrieval_chain import get_character_list
-from tandem.tandem_partner import Response, TandemPartner
+from tandem.tandem_partner import TandemPartner
 
 
 class Separator(QtWidgets.QFrame):
@@ -28,14 +29,13 @@ class ChatWindow(QtWidgets.QMainWindow):
         width = 1280
         height = 720
         self.setGeometry(0, 0, width, height)
-        screen = QtGui.QScreen().geometry()
-        # self.move((screen.width() - width) // 2, (screen.height() - height) // 2)
 
         self.tandem_partner: TandemPartner = tandem
 
         self.topic_label = QtWidgets.QLabel(self.tandem_partner.character_list)
 
-        self.chat_history_widget = ChatHistoryWidget(self)
+        self.history_model = HistoryModel(tandem)
+        self.chat_history_widget = ChatHistoryWidget(self.history_model, self)
 
         self.media_player = QtMultimedia.QMediaPlayer()
         self.audio_output = QtMultimedia.QAudioOutput()
@@ -63,7 +63,6 @@ class ChatWindow(QtWidgets.QMainWindow):
         self.message_input.textChanged.connect(self._message_input_changed)
         self.message_input.returnPressed.connect(self._send_button_clicked)
         self.send_button.clicked.connect(self._send_button_clicked)
-        self.tandem_partner.response_signal.connect(self._display_response)
         self.chat_history_widget.play_clicked.connect(self._play_text2speech)
 
 
@@ -77,15 +76,10 @@ class ChatWindow(QtWidgets.QMainWindow):
     def _send_button_clicked(self):
         message = self.message_input.text()
         self.message_input.setText("")
-        self.chat_history_widget._display_user_message("Student", message)
         if DUMMY_RUN:
-            self.tandem_partner.dummy_invoke(message)
+            self.history_model.add_dummy_message("Student", message)
         else:
-            self.tandem_partner.invoke(message)
-
-    @QtCore.Slot(Response)
-    def _display_response(self, response: Response):
-        self.chat_history_widget._display_lang_response("Lang", response)
+            self.history_model.add_message("Student", message)
 
     @QtCore.Slot(int)
     def _play_text2speech(self, message_idx: int):
@@ -111,7 +105,7 @@ if __name__ == '__main__':
     parser.add_argument("--choose-topic", action="store_true")
     args = parser.parse_args()
     DUMMY_RUN = args.dummy
-        
+
     app = QtWidgets.QApplication(sys.argv)
     app.setApplicationName('Tandem Partner')
 
@@ -135,8 +129,8 @@ if __name__ == '__main__':
             character_list = get_character_list(topic=topic)
         else:
             character_list = get_character_list(topic="traveling")
-    
-    tandem = TandemPartner(character_list)
+
+    tandem = TandemPartner("Lang", character_list)
 
     window = ChatWindow(tandem)
     window.show()
