@@ -4,7 +4,7 @@ if not load_dotenv(override=True):
 
 from pathlib import Path
 
-from langchain.memory import ChatMessageHistory
+from langchain_community.chat_message_histories import ChatMessageHistory
 from openai import OpenAI
 from PySide6.QtCore import QObject, QThread, Signal, Slot
 from tandem.conversation_chain import get_tandem_chain, get_simplified_traditional_converter_chain
@@ -17,11 +17,11 @@ class ResponseWorker(QThread):
         super(ResponseWorker, self).__init__()
         self.chain = chain
         self.message = message
-        
+
     def run(self):
         response = self.chain.invoke({"input": self.message})
         self.response_received.emit(response)
-        
+
 class Response:
     def __init__(self, msg, idx):
         self.idx = idx

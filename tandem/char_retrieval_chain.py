@@ -1,12 +1,12 @@
 from pathlib import Path
 from typing import Optional
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-from langchain.document_loaders import TextLoader
+from langchain_community.document_loaders import TextLoader
 from langchain.prompts import ChatPromptTemplate
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores.chroma import Chroma
+from langchain_community.vectorstores import Chroma
 
 
 _DEFAULT_DOC_PATH = f"{Path(__file__).parent.parent}/.chroma/3000-traditional-hanzi"
