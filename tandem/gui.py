@@ -6,6 +6,7 @@ import sys
 from typing import Optional
 
 from PySide6 import QtCore, QtGui, QtMultimedia, QtWidgets
+from PySide6.QtGui import QFont
 
 from tandem.chat_history.chat_history_widget import ChatHistoryWidget
 from tandem.chat_history.history_model import HistoryModel
@@ -65,7 +66,6 @@ class ChatWindow(QtWidgets.QMainWindow):
         self.send_button.clicked.connect(self._send_button_clicked)
         self.chat_history_widget.play_clicked.connect(self._play_text2speech)
 
-
     def showEvent(self, event):
         super(ChatWindow, self).showEvent(event)
         self.message_input.setFocus()
@@ -108,6 +108,7 @@ if __name__ == '__main__':
 
     app = QtWidgets.QApplication(sys.argv)
     app.setApplicationName('Tandem Partner')
+    app.setFont(QFont(QFont().defaultFamily(), 18))
 
     if DUMMY_RUN:
         character_list = """停(tíng) - stop, suspend, delay; suitable
