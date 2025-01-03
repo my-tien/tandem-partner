@@ -1,6 +1,6 @@
 from PySide6.QtCore import Qt, QModelIndex, QRect, QSize
-from PySide6.QtGui import QFont, QFontMetrics, QPainter, QStaticText
-from PySide6.QtWidgets import QStyledItemDelegate, QStyleOptionViewItem
+from PySide6.QtGui import QPainter, QStaticText
+from PySide6.QtWidgets import QApplication, QStyledItemDelegate, QStyleOptionViewItem
 from chat_history.history_model import HistoryItem
 
 
@@ -18,7 +18,7 @@ class HistoryItemDelegate(QStyledItemDelegate):
         message = self.get_painted_message(index)
 
         option_rect = option.rect
-        font_metrics = QFontMetrics(QFont().defaultFamily())
+        font_metrics = QApplication.fontMetrics()
         max_width = option_rect.width() - 2 * _PAD
         text_width = min(font_metrics.boundingRect(message).width(), max_width)
 
@@ -68,11 +68,10 @@ class HistoryItemDelegate(QStyledItemDelegate):
         painter.drawRoundedRect(bubble, 8, 8)
         painter.drawText(msg_rect, 0, message)
         painter.drawStaticText(author_line_x, author_line_top, QStaticText(author_line))
-
         painter.restore()
 
     def sizeHint(self, option: QStyleOptionViewItem, index: QModelIndex):
-        font_metrics = QFontMetrics(QFont(QFont().defaultFamily(), 18))
+        font_metrics = QApplication.fontMetrics()
         msg_rect = self.get_rects(option, index)
         bubble_size = QSize(msg_rect.width() + 2 * _PAD, msg_rect.height() + 2 * _PAD)
         sender_height = font_metrics.height() + 2 * _PAD
