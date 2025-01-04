@@ -47,7 +47,8 @@ class HistoryModel(QAbstractListModel):
 ---
 Nǐ hǎo! Yào bù yào liáo liáo guān yú tíngchē de huàtí?
 ---
-Hello! Do you want to talk about the topic of parking?""")
+Hello! Do you want to talk about the topic of parking? ihfasdlöfalksdf asjdfeeef
+Hello! Do you want to talk about the topic of parking? ihfasdlöfalksdf Hello! Do you want to talk about the topic of parking? ihfasdlöfalksdfHello! Do you want to talk about the topic of parking? ihfasdlöfalksdfHello! Do you want to talk about the topic of parking? ihfasdlöfalksdfHello! Do you want to talk about the topic of parking? ihfasdlöfalksdfHello! Do you want to talk about the topic of parking? ihfasdlöfalksdfHello! Do you want to talk about the topic of parking? ihfasdlöfalksdfHello! Do you want to talk about the topic of parking? ihfasdlöfalksdfHello! Do you want to talk about the topic of parking? ihfasdlöfalksdfHello! Do you want to talk about the topic of parking? ihfasdlöfalksdfHello! Do you want to talk about the topic of parking? ihfasdlöfalksdf""")
         self.endInsertRows()
 
     @Slot(str)
