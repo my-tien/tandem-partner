@@ -40,7 +40,20 @@ def get_simplified_traditional_converter_chain():
     converter_chain = converter_prompt | llm | StrOutputParser()
     return converter_chain
 
-def get_tandem_chain(character_list: str):
+def get_tandem_chain(stories: str):
+    llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0.7)
+    tandem_system_message = f"""You are Lang, a teacher for Chinese language. The user intends to practice Chinese through casual conversation about the short stories in the provided context below. The conversation should be driven by your questions about the content of a story and evaluating the user's answers. Begin by listing the available short stories and asking the user to choose one to talk about.
+    
+<context>
+{stories}
+</context>"""
+    tandem_prompt = ChatPromptTemplate.from_messages([("system", tandem_system_message), ("user", "{input}")])
+    tandem_chain = tandem_prompt | llm | StrOutputParser()
+
+    return tandem_chain
+
+
+def get_tandem_chain_chars(character_list: str):
     llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.7)
     tandem_system_message = f"""You are Lang, a tandem partner who is native in Chinese. The user intends to practice Chinese and the typical usage of characters through a casual conversation with you. In the provided context is a list of characters that your tandem partner intends to practice. Whenever it makes sense, incorporate one or more of the characters into your response. Also include a remark or question toward the user to continue the conversation. Keep your response within 1 - 3 sentences.
 

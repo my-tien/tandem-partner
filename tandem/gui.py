@@ -3,6 +3,7 @@ import os
 import platform
 import signal
 import sys
+
 from typing import Optional
 
 from PySide6 import QtCore, QtGui, QtMultimedia, QtWidgets
@@ -10,7 +11,6 @@ from PySide6.QtGui import QFont
 
 from tandem.chat_history.chat_history_widget import ChatHistoryWidget
 from tandem.chat_history.history_model import HistoryModel
-from tandem.char_retrieval_chain import get_character_list
 from tandem.tandem_partner import TandemPartner
 
 
@@ -33,7 +33,7 @@ class ChatWindow(QtWidgets.QMainWindow):
 
         self.tandem_partner: TandemPartner = tandem
 
-        self.topic_label = QtWidgets.QLabel(self.tandem_partner.character_list)
+        self.topic_label = QtWidgets.QLabel("")#self.tandem_partner.character_list)
 
         self.history_model = HistoryModel(tandem)
         self.chat_history_widget = ChatHistoryWidget(self.history_model, self)
@@ -111,27 +111,17 @@ if __name__ == '__main__':
     app.setFont(QFont(QFont().defaultFamily(), 18))
 
     if DUMMY_RUN:
-        character_list = """停(tíng) - stop, suspend, delay; suitable
-救(jiù) - save, rescue, relieve; help, aid
-外(wài) - out, outside, external; foreign
-進(jìn) - advance, make progress, enter
-客(kè) - guest, traveller; customer
-集(jí) - assemble, collect together
-越(yuè) - exceed, go beyond; the more ...
-落(luò) - fall, drop; net income, surplus
-待(dài) - treat, entertain, receive; wait
-旅(lǚ) - travel, journey, trip"""
+        stories = ""
     else:
         if args.choose_topic:
             topic = open_topic_dialog()
             if not topic:
                 QtCore.QCoreApplication.exit()
-
-            character_list = get_character_list(topic=topic)
         else:
-            character_list = get_character_list(topic="traveling")
+            with open(r"data\新編初級說話課本.txt", "r", encoding="utf8") as f:
+                stories = f.read()
 
-    tandem = TandemPartner("Lang", character_list)
+    tandem = TandemPartner("Lang", stories)
 
     window = ChatWindow(tandem)
     window.show()
