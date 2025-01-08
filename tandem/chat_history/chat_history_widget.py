@@ -1,14 +1,9 @@
 from typing import Optional
 
-from PySide6.QtWidgets import QAbstractItemView, QTreeView, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QAbstractItemView, QListView, QVBoxLayout, QWidget
 from PySide6.QtCore import Signal
 from chat_history.history_model import HistoryModel
 from chat_history.history_item_delegate import HistoryItemDelegate
-
-
-class ChatTreeView(QTreeView):
-    def resizeEvent(self, _):
-        self.scheduleDelayedItemsLayout()
 
 
 class ChatHistoryWidget(QWidget):
@@ -16,15 +11,18 @@ class ChatHistoryWidget(QWidget):
 
     def __init__(self, model: HistoryModel, parent: Optional[QWidget] = None):
         super(ChatHistoryWidget, self).__init__(parent)
+        self.listview = QListView(self)
         self.history_model = model
-        self.treeview = ChatTreeView(self)
-        self.treeview.setModel(self.history_model)
-        self.treeview.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
-        self.history_model.rowsInserted.connect(self.treeview.scrollToBottom)
-        self.history_model.rowsRemoved.connect(self.treeview.scrollToBottom)
-        self.item_delegate = HistoryItemDelegate(self.treeview)
-        self.treeview.setItemDelegate(self.item_delegate)
+        self.item_delegate = HistoryItemDelegate(self.listview)
+    
+        self.listview.setModel(self.history_model)
+        self.listview.setItemDelegate(self.item_delegate)
+
+        self.listview.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
 
         self.vlayout = QVBoxLayout()
-        self.vlayout.addWidget(self.treeview)
+        self.vlayout.addWidget(self.listview)
         self.setLayout(self.vlayout)
+
+        self.history_model.rowsInserted.connect(self.listview.scrollToBottom)
+        self.history_model.rowsRemoved.connect(self.listview.scrollToBottom)

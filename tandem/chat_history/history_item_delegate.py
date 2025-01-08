@@ -1,6 +1,6 @@
 from PySide6.QtCore import Qt, QModelIndex, QRect, QSize
 from PySide6.QtGui import QPainter, QStaticText
-from PySide6.QtWidgets import QApplication, QStyledItemDelegate, QStyleOptionViewItem, QTreeView
+from PySide6.QtWidgets import QApplication, QStyledItemDelegate, QStyleOptionViewItem, QListView
 from chat_history.history_model import HistoryItem
 
 
@@ -8,7 +8,7 @@ _PAD = 8
 
 
 class HistoryItemDelegate(QStyledItemDelegate):
-    def __init__(self, parent: QTreeView = None):
+    def __init__(self, parent: QListView = None):
         super(HistoryItemDelegate, self).__init__(parent)
         self.view = parent
 
