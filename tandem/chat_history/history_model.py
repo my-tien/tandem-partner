@@ -1,5 +1,5 @@
 from datetime import datetime
-from PySide6.QtCore import QAbstractListModel, QModelIndex, Qt, Slot
+from PySide6.QtCore import QAbstractListModel, QModelIndex, Qt, Signal, Slot
 from tandem.tandem_partner import TandemPartner
 
 
@@ -25,11 +25,16 @@ class HistoryItem:
 
 class HistoryModel(QAbstractListModel):
     _HEADER = ("Message", "Author", "Timestamp")
+    response_handled = Signal()
 
     def __init__(self, tandem: TandemPartner):
         super(HistoryModel, self).__init__()
         self.tandem = tandem
         self.response_worker = None
+
+    def start_new_chat(self, story: str):
+        self.tandem.reset_history()
+        self.add_message("Student", f"Begin lesson for this story: {story}")
 
     def add_message(self, author: str, message: str):
         self.beginInsertRows(QModelIndex(), self.rowCount(), self.rowCount())
@@ -56,6 +61,7 @@ Hello! Do you want to talk about the topic of parking? ihfasdlöfalksdf Hello! D
         self.beginInsertRows(QModelIndex(), self.rowCount(), self.rowCount())
         self.tandem.handle_response(response)
         self.endInsertRows()
+        self.response_handled.emit()
 
     def rowCount(self, parent = QModelIndex()) -> int:
         return len(self.tandem.chat_history.messages)

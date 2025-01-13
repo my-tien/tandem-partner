@@ -43,19 +43,23 @@ class Response:
 class TandemPartner(QObject):
     response_signal = Signal(Response)
 
-    def __init__(self, name: str, character_list: str):
+    def __init__(self, name: str, stories: str):
         super(TandemPartner, self).__init__()
-        tandem_chain = get_tandem_chain(character_list)
+        tandem_chain = get_tandem_chain(stories)
         converter_chain = get_simplified_traditional_converter_chain()
 
         self.name = name
-        self.character_list = character_list
+        self.stories = stories
         self.chain = {"input": tandem_chain} | converter_chain
         self.worker = None
         self.chat_history = ChatMessageHistory()
         self.history_length = 0
         self.openai_client = OpenAI()
     
+    def reset_history(self):
+        self.chat_history = ChatMessageHistory()
+        self.history_length = 0
+
     def _add_user_message(self, message: HumanMessage):
         self.chat_history.add_user_message(message)
         self.history_length += 1
