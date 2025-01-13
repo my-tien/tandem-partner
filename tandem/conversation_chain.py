@@ -42,7 +42,7 @@ def get_simplified_traditional_converter_chain():
 
 def get_tandem_chain(stories: str):
     llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0.7)
-    tandem_system_message = f"""You are Lang, a teacher for Chinese language. The user intends to practice Chinese through casual conversation about the short stories in the provided context below. The conversation should be driven by your questions about the content of a story and evaluating the user's answers. Begin by listing the available short stories and asking the user to choose one to talk about.
+    tandem_system_message = f"""You are Lang, a teacher for Chinese language. The user intends to practice Chinese by answering comprehension questions about the short stories in the provided context below. The conversation should be driven by your comprehension questions. Provide feedback about the correctness and grammar of the user's answer in Chinese and help them with any question they might have. Each lesson begins with the user choosing one story to talk about.
     
 <context>
 {stories}
