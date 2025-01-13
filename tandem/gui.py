@@ -6,23 +6,36 @@ import sys
 
 from typing import Optional
 
-from PySide6 import QtCore, QtGui, QtMultimedia, QtWidgets
+from PySide6.QtCore import QCoreApplication, Qt, QUrl, Slot
 from PySide6.QtGui import QFont
+from PySide6.QtMultimedia import QAudioOutput, QMediaPlayer
+from PySide6.QtWidgets import (
+    QApplication,
+    QFrame,
+    QInputDialog,
+    QLabel,
+    QLineEdit,
+    QMainWindow,
+    QPushButton,
+    QSizePolicy,
+    QVBoxLayout,
+    QWidget
+)
 
 from tandem.chat_history.chat_history_widget import ChatHistoryWidget
 from tandem.chat_history.history_model import HistoryModel
 from tandem.tandem_partner import TandemPartner
 
 
-class Separator(QtWidgets.QFrame):
-    def __init__(self, parent: Optional[QtWidgets.QWidget] = None):
+class Separator(QFrame):
+    def __init__(self, parent: Optional[QWidget] = None):
         super(Separator, self).__init__(parent)
-        self.setFrameShape(QtWidgets.QFrame.HLine)
-        self.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Maximum)
+        self.setFrameShape(QFrame.HLine)
+        self.setFrameShadow(QFrame.Sunken)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
 
 
-class ChatWindow(QtWidgets.QMainWindow):
+class ChatWindow(QMainWindow):
     def __init__(self, tandem):
         super(ChatWindow, self).__init__()
 
@@ -33,23 +46,23 @@ class ChatWindow(QtWidgets.QMainWindow):
 
         self.tandem_partner: TandemPartner = tandem
 
-        self.topic_label = QtWidgets.QLabel("")#self.tandem_partner.character_list)
+        self.topic_label = QLabel("")#self.tandem_partner.character_list)
 
         self.history_model = HistoryModel(tandem)
         self.chat_history_widget = ChatHistoryWidget(self.history_model, self)
 
-        self.media_player = QtMultimedia.QMediaPlayer()
-        self.audio_output = QtMultimedia.QAudioOutput()
+        self.media_player = QMediaPlayer()
+        self.audio_output = QAudioOutput()
         self.audio_output.setVolume(50)
         self.media_player.setAudioOutput(self.audio_output)
 
-        self.message_input = QtWidgets.QLineEdit()
-        self.message_input.setFont(QtGui.QFont("TW-MOE-Std-Kai", pointSize=18))
-        self.message_input.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
+        self.message_input = QLineEdit()
+        self.message_input.setFont(QFont("TW-MOE-Std-Kai", pointSize=18))
+        self.message_input.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.message_input.setPlaceholderText("Type a message…")
-        self.send_button = QtWidgets.QPushButton("Send")
+        self.send_button = QPushButton("Send")
 
-        self.vlayout = QtWidgets.QVBoxLayout()
+        self.vlayout = QVBoxLayout()
         self.vlayout.addWidget(self.topic_label)
         self.vlayout.addWidget(Separator())
         self.vlayout.addWidget(self.chat_history_widget)
@@ -57,7 +70,7 @@ class ChatWindow(QtWidgets.QMainWindow):
         self.vlayout.addWidget(self.message_input)
         self.vlayout.addWidget(self.send_button)
 
-        central_widget = QtWidgets.QWidget()
+        central_widget = QWidget()
         central_widget.setLayout(self.vlayout)
         self.setCentralWidget(central_widget)
 
@@ -81,14 +94,14 @@ class ChatWindow(QtWidgets.QMainWindow):
         else:
             self.history_model.add_message("Student", message)
 
-    @QtCore.Slot(int)
+    @Slot(int)
     def _play_text2speech(self, message_idx: int):
         self.tandem_partner.text2speech(message_idx, f"_audio/{message_idx}.mp3")
-        self.media_player.setSource(QtCore.QUrl.fromLocalFile(f"_audio/{message_idx}.mp3"))
+        self.media_player.setSource(QUrl.fromLocalFile(f"_audio/{message_idx}.mp3"))
         self.media_player.play()
 
 def open_topic_dialog():
-    topic, ok = QtWidgets.QInputDialog.getText(
+    topic, ok = QInputDialog.getText(
         None,
         "Choose a topic for conversation",
         "topic"
@@ -106,7 +119,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     DUMMY_RUN = args.dummy
 
-    app = QtWidgets.QApplication(sys.argv)
+    app = QApplication(sys.argv)
     app.setApplicationName('Tandem Partner')
     app.setFont(QFont(QFont().defaultFamily(), 18))
 
@@ -116,7 +129,7 @@ if __name__ == '__main__':
         if args.choose_topic:
             topic = open_topic_dialog()
             if not topic:
-                QtCore.QCoreApplication.exit()
+                QCoreApplication.exit()
         else:
             with open(r"data\新編初級說話課本.txt", "r", encoding="utf8") as f:
                 stories = f.read()
