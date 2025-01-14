@@ -128,7 +128,7 @@ class ChatWindow(QMainWindow):
         self.history_model.start_new_chat(self.current_story) 
 
     def _message_input_changed(self, text):
-        self.send_button.setEnabled = len(text) > 0
+        self.send_button.setEnabled(len(text) > 0)
 
     def _send_button_clicked(self):
         message = self.message_input.text()
