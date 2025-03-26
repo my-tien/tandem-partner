@@ -1,53 +1,24 @@
-import asyncio
+import re
+
 from langchain_openai import ChatOpenAI
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-
-
-def get_contextualizer_chain():
-    llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
-    contextualizer_system_prompt = """Given a chat history and the latest user input which might reference context in the chat history, formulate a standalone input which 
-can be understood without the chat history. Do NOT answer the input, just reformulate it if needed and otherwise return it as is."""
-    contextualizer_prompt = ChatPromptTemplate.from_messages(
-        [
-            ("system", contextualizer_system_prompt),
-            MessagesPlaceholder(variable_name="chat_history"),
-            ("human", "{input}"),
-        ]
-    )
-
-    contextualizer_chain = contextualizer_prompt | llm | StrOutputParser()
-    return contextualizer_chain
+from langchain_core.runnables import RunnableParallel
 
 
 def get_simplified_traditional_converter_chain():
     llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
-    converter_system_prompt = """Split up the provided input at punctuation marks and for each piece, generate following output:
-
-    <transcription of all simplified Chinese characters to traditional Chinese chharacters>
-    <transcription of the Chinese characters to Pinyin>
-    <english translation of the sentence>
+    converter_system_prompt = """Transcribe all simplified Chinese characters in this input to traditional Chinese characters. Reproduce everything else unchanged. Don't add anything else, just produce an exact transcription.
 
     -----
     Example input:
 
-    你好,你怎么样？我很好.
+    你怎么样？
 
     Example output:
 
-    你好,
-    Nǐ hǎo,
-    Hello,
-
     你怎麼樣？
-    Nǐ zěnme yàng？
-    How are you?
-
-    我很好.
-    Wǒ hěn hǎo.
-    I'm fine.
     -----
-
     """
 
     converter_prompt = ChatPromptTemplate.from_messages(
@@ -58,6 +29,81 @@ def get_simplified_traditional_converter_chain():
     )
     converter_chain = converter_prompt | llm | StrOutputParser()
     return converter_chain
+
+
+def get_hanzi_pinyin_converter_chain():
+    llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
+    converter_system_prompt = """Transcribe all Chinese characters in this input to Pinyin. Don't add anything else, just produce an exact transcription.
+
+    -----
+    Example input:
+
+    你怎么样？
+
+    Example output:
+
+    Nǐ zěnme yàng？
+    -----
+    """
+
+    converter_prompt = ChatPromptTemplate.from_messages(
+        [
+            ("system", converter_system_prompt),
+            ("user", "{input}"),
+        ]
+    )
+    converter_chain = converter_prompt | llm | StrOutputParser()
+    return converter_chain
+
+
+def get_chinese_english_translation_chain():
+    llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0)
+    converter_system_prompt = """Translate this Chinese input into English. Don't add or alter anything else, just produce an accurate translation.
+
+    -----
+    Example input:
+
+    你怎么样？
+
+    Example output:
+
+    How are you?
+    -----
+
+    """
+    converter_prompt = ChatPromptTemplate.from_messages(
+        [
+            ("system", converter_system_prompt),
+            ("user", "{input}"),
+        ]
+    )
+    converter_chain = converter_prompt | llm | StrOutputParser()
+    return converter_chain
+
+
+def sentence_splitter(input: dict[str, str]):
+    result = {}
+    for key, msg in input.items():
+        outputs = re.split("[,.?!:;¸\"？。：“「」…]", input)
+        pos = 0
+        this_result = []
+        for piece in outputs:
+            sep_pos = pos + len(piece)
+            this_result.append(f"{piece}{msg[sep_pos]}")
+            pos = sep_pos + 1
+        result[key] = this_result
+    return result
+
+
+def get_converter_chain():
+    parallel_converters = RunnableParallel(
+        simplified2traditional=get_simplified_traditional_converter_chain(),
+        hanzi2pinyin=get_hanzi_pinyin_converter_chain(),
+        hanzi2english=get_chinese_english_translation_chain()
+    )
+    converter_chain = parallel_converters() | sentence_splitter
+    return converter_chain
+
 
 def get_tandem_chain(stories: str):
     llm = ChatOpenAI(model_name="gpt-4o-mini", temperature=0.7)
@@ -89,7 +135,7 @@ def get_tandem_chain_chars(character_list: str):
 
 def get_tandem_partner(character_list):
     tandem = get_tandem_chain(character_list)
-    converter = get_simplified_traditional_converter_chain()
+    converter = get_converter_chain()
 
     tandem_partner = {"input": tandem} | converter
     return tandem_partner

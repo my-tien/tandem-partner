@@ -57,7 +57,7 @@ Hello! Do you want to talk about the topic of parking? ihfasdlöfalksdf Hello! D
         self.endInsertRows()
 
     @Slot(str)
-    def handle_response(self, response: str):
+    def handle_response(self, response: dict[str, list]):
         self.beginInsertRows(QModelIndex(), self.rowCount(), self.rowCount())
         self.tandem.handle_response(response)
         self.endInsertRows()

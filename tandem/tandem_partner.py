@@ -9,7 +9,7 @@ from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.messages import HumanMessage, AIMessage
 from openai import OpenAI
 from PySide6.QtCore import QObject, QThread, Signal, Slot
-from tandem.conversation_chain import get_tandem_chain, get_simplified_traditional_converter_chain
+from tandem.conversation_chain import get_tandem_chain, get_converter_chain
 
 
 class ResponseWorker(QThread):
@@ -46,7 +46,7 @@ class TandemPartner(QObject):
     def __init__(self, name: str, stories: str):
         super(TandemPartner, self).__init__()
         tandem_chain = get_tandem_chain(stories)
-        converter_chain = get_simplified_traditional_converter_chain()
+        converter_chain = get_converter_chain()
 
         self.name = name
         self.stories = stories
@@ -87,7 +87,7 @@ class TandemPartner(QObject):
         self._add_user_message(message)
 
     @Slot(str)
-    def handle_response(self, response: str):
+    def handle_response(self, response: dict[str, list]):
         response = AIMessage(content=response, additional_kwargs={
             "author": self.name,
             "timestamp": datetime.now().timestamp()
